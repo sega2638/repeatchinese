@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repeat Chinese - Learn Chinese Pronunciation Free</title>
+    <meta name="description" content="Free Chinese pronunciation learning website. 30 lessons, 140 sentences, TTS standard pronunciation, follow-along practice and exam. Zero-bootstrap friendly.">
+    <meta name="keywords" content="Chinese pronunciation, learn Chinese, pinyin, repeat after me, Chinese speaking, Mandarin">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4ff;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+        .nav {
+            background: #fff; border-radius: 16px; padding: 12px 20px; margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+        }
+        .nav-logo { font-size: 22px; font-weight: 700; color: #2563eb; }
+        .nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+        .nav-btn {
+            padding: 8px 18px; border: none; border-radius: 24px; background: transparent;
+            font-size: 15px; cursor: pointer; transition: 0.2s; color: #444;
+            text-decoration: none; display: inline-block;
+        }
+        .nav-btn:hover { background: #eef2ff; }
+        .nav-btn.active { background: #2563eb; color: #fff; }
+
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hero {
+            text-align: center; padding: 48px 20px 32px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 24px; color: #fff; margin-bottom: 20px;
+        }
+        .hero h1 { font-size: 36px; margin-bottom: 12px; letter-spacing: 2px; }
+        .hero p { font-size: 16px; opacity: 0.85; line-height: 1.6; }
+        .hero-btns { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+        .hero-btns .btn {
+            padding: 14px 32px; border: none; border-radius: 40px; font-size: 17px;
+            font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary { background: #fff; color: #2563eb; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .btn-secondary { background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.4); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+        .stats-row { display: flex; justify-content: center; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+        .stat-item { text-align: center; }
+        .stat-item .num { font-size: 28px; font-weight: 700; }
+        .stat-item .label { font-size: 13px; opacity: 0.7; }
+
+        .section-title { font-size: 20px; font-weight: 700; margin: 24px 0 12px; color: #1a1a2e; }
+        .lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+        .lesson-card {
+            background: #fff; border-radius: 16px; padding: 18px; cursor: pointer;
+            transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 2px solid transparent;
+        }
+        .lesson-card:hover { border-color: #2563eb; transform: translateY(-2px); }
+        .lesson-card .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .lesson-card .sub { font-size: 13px; color: #888; }
+        .lesson-card .progress-bar { height: 4px; background: #e5e7eb; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+        .lesson-card .progress-fill { height: 100%; background: #2563eb; border-radius: 4px; width: 0%; transition: width 0.5s; }
+
+        .lesson-header {
+            background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .lesson-header h2 { font-size: 20px; }
+        .lesson-header .back-btn { background: none; border: none; color: #2563eb; font-size: 15px; cursor: pointer; margin-bottom: 8px; }
+        .progress-track { height: 6px; background: #e5e7eb; border-radius: 8px; margin: 12px 0; overflow: hidden; }
+        .progress-track .fill { height: 100%; background: #2563eb; border-radius: 8px; transition: width 0.4s; }
+
+        .card {
+            background: #fff; border-radius: 20px; padding: 32px 24px; text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06); margin-bottom: 12px;
+        }
+        .card .chinese { font-size: 48px; font-weight: 700; margin-bottom: 8px; letter-spacing: 4px; }
+        .card .pinyin { font-size: 24px; color: #2563eb; margin-bottom: 6px; font-weight: 500; }
+        .card .english { font-size: 16px; color: #888; margin-bottom: 20px; }
+        .card .status { font-size: 15px; color: #7c3aed; font-weight: 500; min-height: 28px; margin-bottom: 12px; }
+        .card .btn-play {
+            width: 64px; height: 64px; border-radius: 50%; border: none;
+            background: #2563eb; color: #fff; font-size: 28px; cursor: pointer;
+            transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+        .card .btn-play:hover { transform: scale(1.05); }
+        .card .btn-play:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+        .nav-row button {
+            padding: 10px 24px; border: none; border-radius: 40px; font-size: 15px;
+            cursor: pointer; font-weight: 500; transition: 0.2s;
+        }
+        .nav-row .prev { background: #eef2ff; color: #2563eb; }
+        .nav-row .next { background: #2563eb; color: #fff; }
+        .nav-row button:hover { opacity: 0.85; }
+        .nav-row .counter { font-size: 14px; color: #888; }
+
+        .mode-toggle { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+        .mode-toggle label {
+            padding: 6px 16px; border-radius: 20px; background: #eef2ff; font-size: 14px;
+            cursor: pointer; transition: 0.2s; user-select: none;
+        }
+        .mode-toggle input[type="checkbox"] { margin-right: 4px; }
+
+        .exam-setup { text-align: center; padding: 32px; background: #fff; border-radius: 20px; }
+        .exam-setup h2 { margin-bottom: 20px; }
+        .exam-setup select, .exam-setup button {
+            padding: 10px 20px; font-size: 16px; border-radius: 12px; border: 2px solid #ddd; margin: 6px;
+        }
+        .exam-setup .btn-start {
+            background: #2563eb; color: #fff; border: none; padding: 14px 40px;
+            border-radius: 40px; font-size: 18px; font-weight: 600; cursor: pointer; margin-top: 16px;
+        }
+        .exam-setup .btn-start:hover { opacity: 0.9; }
+
+        .exam-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; border-radius: 16px; padding: 12px 20px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+        }
+        .exam-header .timer { font-size: 24px; font-weight: 700; color: #2563eb; }
+        .exam-header .score { font-size: 16px; color: #444; }
+        .exam-header .q-progress { font-size: 14px; color: #888; }
+
+        .exam-card {
+            background: #fff; border-radius: 20px; padding: 32px 24px; text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .exam-card .prompt { font-size: 14px; color: #888; margin-bottom: 12px; }
+        .exam-card .exam-chinese { font-size: 44px; font-weight: 700; margin-bottom: 16px; letter-spacing: 4px; }
+        .exam-card .exam-pinyin { font-size: 20px; color: #2563eb; margin-bottom: 16px; }
+
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+        .options button {
+            padding: 16px; border: 2px solid #ddd; border-radius: 16px; background: #fff;
+            font-size: 18px; cursor: pointer; transition: 0.15s;
+        }
+        .options button:hover { border-color: #2563eb; }
+        .options button.correct { border-color: #22c55e; background: #f0fdf4; }
+        .options button.wrong { border-color: #ef4444; background: #fef2f2; }
+        .options button:disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .exam-result {
+            background: #fff; border-radius: 20px; padding: 40px 24px; text-align: center;
+        }
+        .exam-result .big-score { font-size: 56px; font-weight: 700; color: #2563eb; }
+        .exam-result .sub { font-size: 16px; color: #888; margin: 12px 0 20px; }
+        .exam-result .btn-retry {
+            padding: 14px 32px; background: #2563eb; color: #fff; border: none;
+            border-radius: 40px; font-size: 16px; font-weight: 600; cursor: pointer;
+        }
+
+        .ad-placeholder {
+            background: #f9fafb; border: 2px dashed #ddd; border-radius: 12px;
+            padding: 24px; text-align: center; margin: 20px 0; color: #aaa; font-size: 14px;
+        }
+        .ad-placeholder.actual { border: none; background: transparent; padding: 8px; min-height: 90px; }
+
+        .toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: #1a1a2e; color: #fff; padding: 12px 24px; border-radius: 40px;
+            font-size: 14px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 999;
+        }
+        .toast.show { opacity: 1; }
+
+        .site-footer {
+            text-align: center; padding: 28px 16px; margin-top: 32px;
+            border-top: 1px solid #e5e7eb; color: #888; font-size: 14px;
+        }
+        .site-footer a { color: #2563eb; text-decoration: none; margin: 0 6px; }
+        .site-footer a:hover { text-decoration: underline; }
+        .site-footer .footer-links { margin-bottom: 8px; }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 26px; }
+            .card .chinese { font-size: 36px; }
+            .options { grid-template-columns: 1fr; }
+            .lesson-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <div class="nav-logo">🗣️ Repeat Chinese</div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="showPage('home')">Home</button>
+                <button class="nav-btn" onclick="showPage('lessons')">Lessons</button>
+                <button class="nav-btn" onclick="showPage('exam')">Exam</button>
+            </div>
+        </nav>
+
+        <!-- ====== HOME ====== -->
+        <div id="page-home" class="page active">
+            <div class="hero">
+                <h1>Repeat Chinese</h1>
+                <p>Listen → Repeat → Test Yourself<br>Learn Mandarin pronunciation from zero</p>
+                <div class="hero-btns">
+                    <button class="btn btn-primary" onclick="showPage('lessons')">📖 Start Learning</button>
+                    <button class="btn btn-secondary" onclick="showPage('exam')">📝 Take an Exam</button>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="num" id="totalLessons">18</div>
+                        <div class="label">Lessons</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="num" id="totalSentences">80</div>
+                        <div class="label">Sentences</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="num" id="examHighScore">--</div>
+                        <div class="label">Best Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ad-placeholder actual" id="ad-home">
+                <!-- ⚠️ After AdSense is approved, uncomment lines below and replace with your ad code -->
+                <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+                <!-- <script>(adsbygoogle=window.adsbygoogle||[]).push({})</script> -->
+            </div>
+
+            <div class="section-title">Recommended Lessons</div>
+            <div class="lesson-grid" id="home-lessons"></div>
+            <div class="ad-placeholder actual" style="margin-top:16px;">
+                <!-- ⚠️ 2nd ad slot -->
+            </div>
+        </div>
+
+        <!-- ====== LESSONS ====== -->
+        <div id="page-lessons" class="page">
+            <div class="section-title">All Lessons</div>
+            <div class="lesson-grid" id="all-lessons"></div>
+            <div class="ad-placeholder actual" style="margin-top:16px;">
+                <!-- ⚠️ 3rd ad slot -->
+            </div>
+        </div>
+
+        <!-- ====== STUDY ====== -->
+        <div id="page-study" class="page">
+            <div class="lesson-header">
+                <button class="back-btn" onclick="showPage('lessons')">← Back to Lessons</button>
+                <h2 id="study-title">Lesson Title</h2>
+                <div class="progress-track"><div class="fill" id="study-progress" style="width:0%"></div></div>
+            </div>
+
+            <div class="mode-toggle">
+                <label><input type="checkbox" id="autoMode" checked> 🔄 Auto-repeat mode</label>
+                <label><input type="checkbox" id="slowMode" checked> 🐌 Slow speed</label>
+            </div>
+
+            <div class="card">
+                <div class="chinese" id="study-chinese">你</div>
+                <div class="pinyin" id="study-pinyin">nǐ</div>
+                <div class="english" id="study-english">you</div>
+                <div class="status" id="study-status">Click play to listen, then repeat after it</div>
+                <button class="btn-play" id="btnPlay" onclick="playCurrent()">▶</button>
+                <div class="nav-row">
+                    <button class="prev" onclick="prevSentence()">← Previous</button>
+                    <span class="counter" id="study-counter">1 / 10</span>
+                    <button class="next" onclick="nextSentence()">Next →</button>
+                </div>
+            </div>
+
+            <div class="ad-placeholder actual">
+                <!-- ⚠️ 4th ad slot -->
+            </div>
+        </div>
+
+        <!-- ====== EXAM ====== -->
+        <div id="page-exam" class="page">
+            <div id="exam-setup" class="exam-setup">
+                <h2>📝 Mock Exam</h2>
+                <p style="color:#888;margin-bottom:16px;">Random questions from all 80 sentences. Test your Chinese level!</p>
+                <div>
+                    <label>Number of questions:</label>
+                    <select id="exam-count">
+                        <option value="5">5 (Quick)</option>
+                        <option value="10" selected>10 (Standard)</option>
+                        <option value="15">15 (Serious)</option>
+                        <option value="20">20 (Challenge)</option>
+                    </select>
+                </div>
+                <div style="margin-top:10px;">
+                    <label>Question type:</label>
+                    <select id="exam-type">
+                        <option value="mixed">Mixed (listening + reading)</option>
+                        <option value="listen">🎧 Listen & pick pinyin</option>
+                        <option value="chinese">👀 See Chinese & pick pinyin</option>
+                    </select>
+                </div>
+                <div style="margin-top:16px;">
+                    <button class="btn-start" onclick="startExam()">🚀 Start Exam</button>
+                </div>
+            </div>
+
+            <div id="exam-ing" style="display:none;">
+                <div class="exam-header">
+                    <span class="q-progress" id="exam-progress">Question 1 / 10</span>
+                    <span class="score" id="exam-score">✅ 0 points</span>
+                    <span class="timer" id="exam-timer">⏱ 00:00</span>
+                </div>
+                <div class="exam-card">
+                    <div class="prompt" id="exam-prompt">Choose the correct pinyin</div>
+                    <div class="exam-chinese" id="exam-chinese">你</div>
+                    <div class="exam-pinyin" id="exam-pinyin"></div>
+                    <div class="options" id="exam-options"></div>
+                    <button class="btn-next-exam" id="btnNextExam" style="display:none;padding:10px 28px;border:none;border-radius:40px;background:#2563eb;color:#fff;font-size:16px;cursor:pointer;margin-top:12px;" onclick="nextExamQuestion()">Next →</button>
+                </div>
+            </div>
+
+            <div id="exam-result" style="display:none;">
+                <div class="exam-result">
+                    <div style="font-size:60px;margin-bottom:12px;">🎉</div>
+                    <div class="big-score" id="result-score">0</div>
+                    <div class="sub" id="result-sub">Correct: 0/10</div>
+                    <div style="font-size:18px;margin-bottom:8px;" id="result-msg">Keep going!</div>
+                    <div style="font-size:14px;color:#888;margin-bottom:20px;" id="result-time">Time: 00:00</div>
+                    <button class="btn-retry" onclick="resetExam()">🔄 Try Again</button>
+                    <button style="margin-left:10px;padding:14px 32px;background:#eef2ff;color:#2563eb;border:none;border-radius:40px;font-size:16px;cursor:pointer;" onclick="showPage('lessons')">📖 Go Study</button>
+                </div>
+            </div>
+            <div class="ad-placeholder actual" style="margin-top:12px;">
+                <!-- ⚠️ 5th ad slot -->
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+
+        <footer class="site-footer">
+            <div class="footer-links">
+                <a href="about.html">About</a>
+                ·
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <p>© 2025 Repeat Chinese · Free Mandarin Pronunciation</p>
+        </footer>
+    </div>
+
+    <script>
+        const LESSONS = [
+            {
+                title: "Lesson 1: Tones Basics",
+                sentences: [
+                    { ch: "妈", py: "mā", en: "mom" },
+                    { ch: "麻", py: "má", en: "hemp" },
+                    { ch: "马", py: "mǎ", en: "horse" },
+                    { ch: "骂", py: "mà", en: "scold" },
+                    { ch: "吗", py: "ma", en: "(question)" },
+                ]
+            },
+            {
+                title: "Lesson 2: Simple Finals",
+                sentences: [
+                    { ch: "啊", py: "ā", en: "ah" },
+                    { ch: "喔", py: "ō", en: "oh" },
+                    { ch: "鹅", py: "é", en: "goose" },
+                    { ch: "一", py: "yī", en: "one" },
+                    { ch: "五", py: "wǔ", en: "five" },
+                ]
+            },
+            {
+                title: "Lesson 3: Compound Finals",
+                sentences: [
+                    { ch: "爱", py: "ài", en: "love" },
+                    { ch: "好", py: "hǎo", en: "good" },
+                    { ch: "小", py: "xiǎo", en: "small" },
+                    { ch: "快", py: "kuài", en: "fast" },
+                    { ch: "水", py: "shuǐ", en: "water" },
+                ]
+            },
+            {
+                title: "Lesson 4: Basic Greetings",
+                sentences: [
+                    { ch: "你好", py: "nǐ hǎo", en: "hello" },
+                    { ch: "谢谢", py: "xiè xiè", en: "thank you" },
+                    { ch: "对不起", py: "duì bu qǐ", en: "sorry" },
+                    { ch: "没关系", py: "méi guān xi", en: "it's ok" },
+                    { ch: "再见", py: "zài jiàn", en: "goodbye" },
+                ]
+            },
+            {
+                title: "Lesson 5: Self Introduction",
+                sentences: [
+                    { ch: "我叫小明", py: "wǒ jiào xiǎo míng", en: "I'm Xiaoming" },
+                    { ch: "我来自中国", py: "wǒ lái zì zhōng guó", en: "I'm from China" },
+                    { ch: "很高兴认识你", py: "hěn gāo xìng rèn shí nǐ", en: "nice to meet you" },
+                    { ch: "请多关照", py: "qǐng duō guān zhào", en: "please take care" },
+                    { ch: "你叫什么名字", py: "nǐ jiào shén me míng zì", en: "what's your name?" },
+                ]
+            },
+            {
+                title: "Lesson 6: Numbers",
+                sentences: [
+                    { ch: "零", py: "líng", en: "zero" },
+                    { ch: "二", py: "èr", en: "two" },
+                    { ch: "三", py: "sān", en: "three" },
+                    { ch: "十", py: "shí", en: "ten" },
+                    { ch: "一百", py: "yī bǎi", en: "one hundred" },
+                ]
+            },
+            {
+                title: "Lesson 7: Colors",
+                sentences: [
+                    { ch: "红色", py: "hóng sè", en: "red" },
+                    { ch: "蓝色", py: "lán sè", en: "blue" },
+                    { ch: "绿色", py: "lǜ sè", en: "green" },
+                    { ch: "白色", py: "bái sè", en: "white" },
+                    { ch: "黑色", py: "hēi sè", en: "black" },
+                ]
+            },
+            {
+                title: "Lesson 8: Family",
+                sentences: [
+                    { ch: "爸爸", py: "bà ba", en: "dad" },
+                    { ch: "妈妈", py: "mā ma", en: "mom" },
+                    { ch: "哥哥", py: "gē ge", en: "older brother" },
+                    { ch: "姐姐", py: "jiě jie", en: "older sister" },
+                    { ch: "妹妹", py: "mèi mei", en: "younger sister" },
+                ]
+            },
+            {
+                title: "Lesson 9: Food",
+                sentences: [
+                    { ch: "米饭", py: "mǐ fàn", en: "rice" },
+                    { ch: "面条", py: "miàn tiáo", en: "noodles" },
+                    { ch: "苹果", py: "píng guǒ", en: "apple" },
+                    { ch: "茶", py: "chá", en: "tea" },
+                    { ch: "水", py: "shuǐ", en: "water" },
+                ]
+            },
+            {
+                title: "Lesson 10: Time",
+                sentences: [
+                    { ch: "今天", py: "jīn tiān", en: "today" },
+                    { ch: "明天", py: "míng tiān", en: "tomorrow" },
+                    { ch: "昨天", py: "zuó tiān", en: "yesterday" },
+                    { ch: "早上好", py: "zǎo shang hǎo", en: "good morning" },
+                    { ch: "晚上好", py: "wǎn shang hǎo", en: "good evening" },
+                ]
+            },
+            {
+                title: "Lesson 11: Common Verbs",
+                sentences: [
+                    { ch: "吃", py: "chī", en: "eat" },
+                    { ch: "喝", py: "hē", en: "drink" },
+                    { ch: "走", py: "zǒu", en: "walk" },
+                    { ch: "看", py: "kàn", en: "look / see" },
+                    { ch: "听", py: "tīng", en: "listen" },
+                ]
+            },
+            {
+                title: "Lesson 12: Shopping",
+                sentences: [
+                    { ch: "多少钱", py: "duō shao qián", en: "how much?" },
+                    { ch: "太贵了", py: "tài guì le", en: "too expensive" },
+                    { ch: "便宜一点", py: "pián yi yī diǎn", en: "a bit cheaper" },
+                    { ch: "我要这个", py: "wǒ yào zhè ge", en: "I want this one" },
+                    { ch: "买单", py: "mǎi dān", en: "check please" },
+                ]
+            },
+            {
+                title: "Lesson 13: Asking Directions",
+                sentences: [
+                    { ch: "请问", py: "qǐng wèn", en: "excuse me" },
+                    { ch: "在哪儿", py: "zài nǎr", en: "where is it?" },
+                    { ch: "左边", py: "zuǒ biān", en: "left side" },
+                    { ch: "右边", py: "yòu biān", en: "right side" },
+                    { ch: "直走", py: "zhí zǒu", en: "go straight" },
+                ]
+            },
+            {
+                title: "Lesson 14: Weather",
+                sentences: [
+                    { ch: "今天很热", py: "jīn tiān hěn rè", en: "today is hot" },
+                    { ch: "下雨了", py: "xià yǔ le", en: "it's raining" },
+                    { ch: "有风", py: "yǒu fēng", en: "it's windy" },
+                    { ch: "天气很好", py: "tiān qì hěn hǎo", en: "the weather is nice" },
+                    { ch: "冷", py: "lěng", en: "cold" },
+                ]
+            },
+            {
+                title: "Lesson 15: Feelings",
+                sentences: [
+                    { ch: "我很开心", py: "wǒ hěn kāi xīn", en: "I'm happy" },
+                    { ch: "我累了", py: "wǒ lèi le", en: "I'm tired" },
+                    { ch: "我好饿", py: "wǒ hǎo è", en: "I'm hungry" },
+                    { ch: "我爱你", py: "wǒ ài nǐ", en: "I love you" },
+                    { ch: "别担心", py: "bié dān xīn", en: "don't worry" },
+                ]
+            },
+            {
+                title: "Lesson 16: Work",
+                sentences: [
+                    { ch: "我是老师", py: "wǒ shì lǎo shī", en: "I'm a teacher" },
+                    { ch: "你在哪儿工作", py: "nǐ zài nǎr gōng zuò", en: "where do you work?" },
+                    { ch: "我很忙", py: "wǒ hěn máng", en: "I'm busy" },
+                    { ch: "周末休息", py: "zhōu mò xiū xi", en: "rest on weekends" },
+                    { ch: "加油", py: "jiā yóu", en: "keep going!" },
+                ]
+            },
+            {
+                title: "Lesson 17: Travel",
+                sentences: [
+                    { ch: "我要去中国", py: "wǒ yào qù zhōng guó", en: "I want to go to China" },
+                    { ch: "飞机票", py: "fēi jī piào", en: "flight ticket" },
+                    { ch: "护照", py: "hù zhào", en: "passport" },
+                    { ch: "酒店", py: "jiǔ diàn", en: "hotel" },
+                    { ch: "这里很美", py: "zhè lǐ hěn měi", en: "it's beautiful here" },
+                ]
+            },
+            {
+                title: "Lesson 18: Conversations",
+                sentences: [
+                    { ch: "你吃饭了吗", py: "nǐ chī fàn le ma", en: "have you eaten?" },
+                    { ch: "我很好，谢谢", py: "wǒ hěn hǎo xiè xiè", en: "I'm fine, thanks" },
+                    { ch: "一起去吧", py: "yī qǐ qù ba", en: "let's go together" },
+                    { ch: "没问题", py: "méi wèn tí", en: "no problem" },
+                    { ch: "祝你生日快乐", py: "zhù nǐ shēng rì kuài lè", en: "happy birthday" },
+                ]
+            },
+            {
+                title: "Lesson 19: Body Parts",
+                sentences: [
+                    { ch: "头", py: "tóu", en: "head" },
+                    { ch: "手", py: "shǒu", en: "hand" },
+                    { ch: "脚", py: "jiǎo", en: "foot" },
+                    { ch: "眼睛", py: "yǎn jīng", en: "eyes" },
+                    { ch: "耳朵", py: "ěr duo", en: "ears" },
+                ]
+            },
+            {
+                title: "Lesson 20: Animals",
+                sentences: [
+                    { ch: "狗", py: "gǒu", en: "dog" },
+                    { ch: "猫", py: "māo", en: "cat" },
+                    { ch: "鱼", py: "yú", en: "fish" },
+                    { ch: "鸟", py: "niǎo", en: "bird" },
+                    { ch: "马", py: "mǎ", en: "horse" },
+                ]
+            },
+            {
+                title: "Lesson 21: Fruits",
+                sentences: [
+                    { ch: "苹果", py: "píng guǒ", en: "apple" },
+                    { ch: "香蕉", py: "xiāng jiāo", en: "banana" },
+                    { ch: "西瓜", py: "xī guā", en: "watermelon" },
+                    { ch: "橘子", py: "jú zi", en: "orange" },
+                    { ch: "草莓", py: "cǎo méi", en: "strawberry" },
+                ]
+            },
+            {
+                title: "Lesson 22: Drinks",
+                sentences: [
+                    { ch: "咖啡", py: "kā fēi", en: "coffee" },
+                    { ch: "可乐", py: "kě lè", en: "cola" },
+                    { ch: "牛奶", py: "niú nǎi", en: "milk" },
+                    { ch: "果汁", py: "guǒ zhī", en: "juice" },
+                    { ch: "啤酒", py: "pí jiǔ", en: "beer" },
+                ]
+            },
+            {
+                title: "Lesson 23: Clothing",
+                sentences: [
+                    { ch: "衣服", py: "yī fu", en: "clothes" },
+                    { ch: "鞋子", py: "xié zi", en: "shoes" },
+                    { ch: "帽子", py: "mào zi", en: "hat" },
+                    { ch: "裤子", py: "kù zi", en: "pants" },
+                    { ch: "袜子", py: "wà zi", en: "socks" },
+                ]
+            },
+            {
+                title: "Lesson 24: Hobbies",
+                sentences: [
+                    { ch: "唱歌", py: "chàng gē", en: "sing" },
+                    { ch: "跳舞", py: "tiào wǔ", en: "dance" },
+                    { ch: "跑步", py: "pǎo bù", en: "run / jog" },
+                    { ch: "看书", py: "kàn shū", en: "read books" },
+                    { ch: "游泳", py: "yóu yǒng", en: "swim" },
+                ]
+            },
+            {
+                title: "Lesson 25: Transportation",
+                sentences: [
+                    { ch: "汽车", py: "qì chē", en: "car" },
+                    { ch: "自行车", py: "zì xíng chē", en: "bicycle" },
+                    { ch: "地铁", py: "dì tiě", en: "subway" },
+                    { ch: "公共汽车", py: "gōng gòng qì chē", en: "bus" },
+                    { ch: "火车", py: "huǒ chē", en: "train" },
+                ]
+            },
+            {
+                title: "Lesson 26: School",
+                sentences: [
+                    { ch: "学校", py: "xué xiào", en: "school" },
+                    { ch: "老师", py: "lǎo shī", en: "teacher" },
+                    { ch: "学生", py: "xué shēng", en: "student" },
+                    { ch: "书", py: "shū", en: "book" },
+                    { ch: "笔", py: "bǐ", en: "pen" },
+                ]
+            },
+            {
+                title: "Lesson 27: Health",
+                sentences: [
+                    { ch: "医院", py: "yī yuàn", en: "hospital" },
+                    { ch: "生病", py: "shēng bìng", en: "sick" },
+                    { ch: "药", py: "yào", en: "medicine" },
+                    { ch: "医生", py: "yī shēng", en: "doctor" },
+                    { ch: "休息", py: "xiū xi", en: "rest" },
+                ]
+            },
+            {
+                title: "Lesson 28: Phone & Internet",
+                sentences: [
+                    { ch: "电话", py: "diàn huà", en: "telephone" },
+                    { ch: "手机", py: "shǒu jī", en: "mobile phone" },
+                    { ch: "电脑", py: "diàn nǎo", en: "computer" },
+                    { ch: "上网", py: "shàng wǎng", en: "go online" },
+                    { ch: "微信", py: "wēi xìn", en: "WeChat" },
+                ]
+            },
+            {
+                title: "Lesson 29: At the Restaurant",
+                sentences: [
+                    { ch: "菜单", py: "cài dān", en: "menu" },
+                    { ch: "点菜", py: "diǎn cài", en: "order food" },
+                    { ch: "好吃", py: "hǎo chī", en: "delicious" },
+                    { ch: "辣", py: "là", en: "spicy" },
+                    { ch: "买单", py: "mǎi dān", en: "check / bill" },
+                ]
+            },
+            {
+                title: "Lesson 30: Countries",
+                sentences: [
+                    { ch: "中国", py: "zhōng guó", en: "China" },
+                    { ch: "美国", py: "měi guó", en: "America" },
+                    { ch: "英国", py: "yīng guó", en: "UK" },
+                    { ch: "日本", py: "rì běn", en: "Japan" },
+                    { ch: "法国", py: "fǎ guó", en: "France" },
+                ]
+            },
+        ];
+
+        let currentPage = 'home';
+        let currentLessonIdx = 0;
+        let currentSentenceIdx = 0;
+        let isPlaying = false;
+        let synth = window.speechSynthesis;
+        let utterance = null;
+
+        let examQuestions = [];
+        let examIndex = 0;
+        let examScore = 0;
+        let examTotal = 10;
+        let examTimer = null;
+        let examSeconds = 0;
+        let examAnswered = false;
+        let examType = 'mixed';
+
+        function showPage(page, data) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const map = { home: 0, lessons: 0, exam: 1, study: 1 };
+            const idx = map[page] || 0;
+            const btns = document.querySelectorAll('.nav-btn');
+            if (btns[idx]) btns[idx].classList.add('active');
+
+            if (page === 'home') renderHomeLessons();
+            if (page === 'lessons') renderAllLessons();
+            if (page === 'study' && data !== undefined) {
+                currentLessonIdx = data;
+                currentSentenceIdx = 0;
+                renderStudy();
+            }
+            if (page === 'exam') resetExam();
+            currentPage = page;
+        }
+
+        function renderHomeLessons() {
+            const container = document.getElementById('home-lessons');
+            if (!container) return;
+            container.innerHTML = LESSONS.slice(0, 6).map((l, i) => `
+                <div class="lesson-card" onclick="showPage('study',${i})">
+                    <div class="title">${l.title}</div>
+                    <div class="sub">${l.sentences.length} sentences</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${getProgress(i)}%"></div></div>
+                </div>
+            `).join('');
+            const total = LESSONS.reduce((s, l) => s + l.sentences.length, 0);
+            document.getElementById('totalSentences').textContent = total;
+            const high = localStorage.getItem('examHighScore');
+            document.getElementById('examHighScore').textContent = high || '--';
+        }
+
+        function getProgress(lessonIdx) {
+            const done = JSON.parse(localStorage.getItem('done_' + lessonIdx) || '[]');
+            const total = LESSONS[lessonIdx].sentences.length;
+            return total ? Math.round((done.length / total) * 100) : 0;
+        }
+
+        function renderAllLessons() {
+            const container = document.getElementById('all-lessons');
+            if (!container) return;
+            container.innerHTML = LESSONS.map((l, i) => `
+                <div class="lesson-card" onclick="showPage('study',${i})">
+                    <div class="title">${l.title}</div>
+                    <div class="sub">${l.sentences.length} sentences</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${getProgress(i)}%"></div></div>
+                </div>
+            `).join('');
+        }
+
+        function renderStudy() {
+            const lesson = LESSONS[currentLessonIdx];
+            document.getElementById('study-title').textContent = lesson.title;
+            showSentence();
+        }
+
+        function showSentence() {
+            const lesson = LESSONS[currentLessonIdx];
+            const s = lesson.sentences[currentSentenceIdx];
+            document.getElementById('study-chinese').textContent = s.ch;
+            document.getElementById('study-pinyin').textContent = s.py;
+            document.getElementById('study-english').textContent = s.en;
+            document.getElementById('study-counter').textContent = `${currentSentenceIdx+1} / ${lesson.sentences.length}`;
+            document.getElementById('study-progress').style.width = `${((currentSentenceIdx+1)/lesson.sentences.length)*100}%`;
+            document.getElementById('study-status').textContent = 'Click play to listen, then repeat after it';
+            document.getElementById('btnPlay').disabled = false;
+            document.getElementById('btnPlay').textContent = '▶';
+            isPlaying = false;
+        }
+
+        function speakText(text, rate, callback) {
+            if (synth.speaking) synth.cancel();
+            utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = rate || 0.75;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            const voices = synth.getVoices();
+            const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+            if (zhVoice) utterance.voice = zhVoice;
+            if (callback) utterance.onend = callback;
+            synth.speak(utterance);
+        }
+
+        function playCurrent() {
+            if (isPlaying) return;
+            const lesson = LESSONS[currentLessonIdx];
+            const s = lesson.sentences[currentSentenceIdx];
+            const btn = document.getElementById('btnPlay');
+            const status = document.getElementById('study-status');
+
+            btn.disabled = true;
+            btn.textContent = '🔊';
+            status.textContent = '🔊 Speaking...';
+            isPlaying = true;
+
+            const autoMode = document.getElementById('autoMode').checked;
+            const slowMode = document.getElementById('slowMode').checked;
+            const rate = slowMode ? 0.7 : 0.9;
+            const text = s.ch;
+
+            speakText(text, rate, () => {
+                if (autoMode) {
+                    status.textContent = '🎤 Your turn! Repeat after me (3s pause)...';
+                    let countdown = 3;
+                    const interval = setInterval(() => {
+                        countdown--;
+                        if (countdown <= 0) {
+                            clearInterval(interval);
+                            markDone(currentLessonIdx, currentSentenceIdx);
+                            if (currentSentenceIdx < lesson.sentences.length - 1) {
+                                currentSentenceIdx++;
+                                showSentence();
+                                setTimeout(() => playCurrent(), 500);
+                            } else {
+                                status.textContent = '🎉 Lesson complete!';
+                                btn.disabled = false;
+                                btn.textContent = '✅';
+                                isPlaying = false;
+                                showToast('🎉 Great job! You finished this lesson!');
+                            }
+                        }
+                    }, 1000);
+                } else {
+                    status.textContent = '🎤 Repeat after me! Click Next when ready.';
+                    btn.disabled = false;
+                    btn.textContent = '▶';
+                    isPlaying = false;
+                    markDone(currentLessonIdx, currentSentenceIdx);
+                }
+            });
+        }
+
+        function markDone(lessonIdx, sentenceIdx) {
+            const key = 'done_' + lessonIdx;
+            const done = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!done.includes(sentenceIdx)) {
+                done.push(sentenceIdx);
+                localStorage.setItem(key, JSON.stringify(done));
+                if (currentPage === 'home' || currentPage === 'lessons') {
+                    renderHomeLessons();
+                    renderAllLessons();
+                }
+            }
+        }
+
+        function nextSentence() {
+            const lesson = LESSONS[currentLessonIdx];
+            if (currentSentenceIdx < lesson.sentences.length - 1) { currentSentenceIdx++; showSentence(); }
+        }
+
+        function prevSentence() {
+            if (currentSentenceIdx > 0) { currentSentenceIdx--; showSentence(); }
+        }
+
+        function resetExam() {
+            document.getElementById('exam-setup').style.display = 'block';
+            document.getElementById('exam-ing').style.display = 'none';
+            document.getElementById('exam-result').style.display = 'none';
+            if (examTimer) { clearInterval(examTimer); examTimer = null; }
+        }
+
+        function startExam() {
+            examTotal = parseInt(document.getElementById('exam-count').value);
+            examType = document.getElementById('exam-type').value;
+            examScore = 0; examIndex = 0; examSeconds = 0; examAnswered = false;
+
+            const allSentences = [];
+            LESSONS.forEach((lesson, li) => {
+                lesson.sentences.forEach((s, si) => {
+                    allSentences.push({ ...s, lessonIdx: li, sentenceIdx: si });
+                });
+            });
+            const shuffled = [...allSentences].sort(() => Math.random() - 0.5);
+            examQuestions = shuffled.slice(0, Math.min(examTotal, shuffled.length));
+            examTotal = examQuestions.length;
+
+            document.getElementById('exam-setup').style.display = 'none';
+            document.getElementById('exam-result').style.display = 'none';
+            document.getElementById('exam-ing').style.display = 'block';
+
+            if (examTimer) clearInterval(examTimer);
+            examTimer = setInterval(() => {
+                examSeconds++;
+                const m = Math.floor(examSeconds / 60);
+                const s2 = examSeconds % 60;
+                document.getElementById('exam-timer').textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s2).padStart(2,'0')}`;
+            }, 1000);
+
+            showExamQuestion();
+        }
+
+        function showExamQuestion() {
+            if (examIndex >= examTotal) { finishExam(); return; }
+            const q = examQuestions[examIndex];
+            examAnswered = false;
+            document.getElementById('exam-progress').textContent = `Question ${examIndex+1} / ${examTotal}`;
+            document.getElementById('exam-score').textContent = `✅ ${examScore} points`;
+            document.getElementById('btnNextExam').style.display = 'none';
+
+            const prompt = document.getElementById('exam-prompt');
+            const chineseEl = document.getElementById('exam-chinese');
+            const pinyinEl = document.getElementById('exam-pinyin');
+            const optionsEl = document.getElementById('exam-options');
+
+            chineseEl.style.display = 'block';
+            pinyinEl.style.display = 'block';
+
+            let type = examType;
+            if (type === 'mixed') type = Math.random() > 0.5 ? 'listen' : 'chinese';
+
+            if (type === 'listen') {
+                prompt.textContent = '🎧 Listen to the audio, choose the correct pinyin';
+                chineseEl.style.display = 'none';
+                pinyinEl.textContent = '🔊 Playing audio...';
+                const correctPy = q.py;
+                const allPy = LESSONS.flatMap(l => l.sentences.map(s => s.py)).filter(py => py !== correctPy).sort(() => Math.random() - 0.5).slice(0, 3);
+                const options = [correctPy, ...allPy].sort(() => Math.random() - 0.5);
+                optionsEl.innerHTML = options.map(opt => `<button onclick="answerExam('${opt.replace(/'/g,"\\'")}','${correctPy.replace(/'/g,"\\'")}')">${opt}</button>`).join('');
+                if (synth.speaking) synth.cancel();
+                const u = new SpeechSynthesisUtterance(q.ch);
+                u.lang = 'zh-CN'; u.rate = 0.8;
+                const voices = synth.getVoices();
+                const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+                if (zhVoice) u.voice = zhVoice;
+                synth.speak(u);
+            } else {
+                prompt.textContent = '👀 Read the Chinese, choose the correct pinyin';
+                chineseEl.textContent = q.ch;
+                chineseEl.style.display = 'block';
+                pinyinEl.style.display = 'none';
+                const correctPy = q.py;
+                const allPy = LESSONS.flatMap(l => l.sentences.map(s => s.py)).filter(py => py !== correctPy).sort(() => Math.random() - 0.5).slice(0, 3);
+                const options = [correctPy, ...allPy].sort(() => Math.random() - 0.5);
+                optionsEl.innerHTML = options.map(opt => `<button onclick="answerExam('${opt.replace(/'/g,"\\'")}','${correctPy.replace(/'/g,"\\'")}')">${opt}</button>`).join('');
+            }
+        }
+
+        function answerExam(selected, correct) {
+            if (examAnswered) return;
+            examAnswered = true;
+            const buttons = document.querySelectorAll('#exam-options button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === correct) btn.classList.add('correct');
+                else if (btn.textContent === selected && selected !== correct) btn.classList.add('wrong');
+            });
+            if (selected === correct) { examScore++; document.getElementById('exam-score').textContent = `✅ ${examScore} points`; }
+            document.getElementById('btnNextExam').style.display = 'inline-block';
+            document.getElementById('btnNextExam').textContent = examIndex + 1 >= examTotal ? 'See Results →' : 'Next →';
+        }
+
+        function nextExamQuestion() { examIndex++; showExamQuestion(); }
+
+        function finishExam() {
+            if (examTimer) { clearInterval(examTimer); examTimer = null; }
+            document.getElementById('exam-ing').style.display = 'none';
+            document.getElementById('exam-result').style.display = 'block';
+            const pct = Math.round((examScore / examTotal) * 100);
+            document.getElementById('result-score').textContent = `${pct}%`;
+            document.getElementById('result-sub').textContent = `Correct: ${examScore}/${examTotal}`;
+            const m = Math.floor(examSeconds / 60);
+            const s2 = examSeconds % 60;
+            document.getElementById('result-time').textContent = `Time: ${String(m).padStart(2,'0')}:${String(s2).padStart(2,'0')}`;
+            let msg = '';
+            if (pct >= 90) msg = '🎉 Excellent! You are a Chinese master!';
+            else if (pct >= 70) msg = '👏 Great job! Keep practicing!';
+            else if (pct >= 50) msg = '💪 Not bad! Practice a few more times.';
+            else msg = '📖 Go back and study more. You can do it!';
+            const high = parseInt(localStorage.getItem('examHighScore') || '0');
+            if (pct > high) { localStorage.setItem('examHighScore', String(pct)); msg += ' 🏆 New record!'; }
+            document.getElementById('result-msg').textContent = msg;
+            renderHomeLessons();
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2500);
+        }
+
+        renderHomeLessons();
+        if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = () => synth.getVoices();
+        synth.getVoices();
+    </script>
+</body>
+</html>
